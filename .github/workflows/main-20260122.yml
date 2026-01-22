@@ -1,0 +1,93 @@
+name: Build SimpleModManager NRO
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build-nro:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    container:
+      image: devkitpro/devkita64:latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+          fetch-depth: 1
+      
+      - name: Fix git dubious ownership issue and Clone Submodules
+        run: |
+          # Fix git dubious ownership issue
+          git config --global --add safe.directory ${GITHUB_WORKSPACE}
+          
+          # Clone all submodules with explicit branches
+          rm -rf submodules
+          mkdir -p submodules
+          
+          # Clone submodules without specifying branch (use default)
+          git clone https://github.com/nadrino/borealis submodules/borealis
+          git clone https://github.com/nadrino/cpp-generic-toolbox.git submodules/cpp-generic-toolbox
+          git clone https://github.com/nadrino/libtesla.git submodules/libtesla
+          git clone https://github.com/nadrino/simple-cpp-logger.git submodules/simple-cpp-logger
+      
+      - name: Extract Version Number and Short SHA
+        run: |
+          # Extract version from CMakeLists.txt
+          VERSION_MAJOR=$(grep -oP 'set\(VERSION_MAJOR \K[0-9]+' ${GITHUB_WORKSPACE}/CMakeLists.txt)
+          VERSION_MINOR=$(grep -oP 'set\(VERSION_MINOR \K[0-9]+' ${GITHUB_WORKSPACE}/CMakeLists.txt)
+          VERSION_MICRO=$(grep -oP 'set\(VERSION_MICRO \K[0-9]+' ${GITHUB_WORKSPACE}/CMakeLists.txt)
+          VERSION="v${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_MICRO}"
+          
+          # Extract short SHA using more portable syntax
+          SHORT_SHA=$(echo "$GITHUB_SHA" | cut -c 1-7)
+          
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
+      
+      - name: Configure CMake
+        run: |
+          mkdir -p build
+          cd build
+          cmake -D CMAKE_TOOLCHAIN_FILE=${GITHUB_WORKSPACE}/cmake/devkita64-libnx.cmake ${GITHUB_WORKSPACE}
+      
+      - name: Build Project
+        run: |
+          cd build
+          make -j$(nproc)
+      
+      - name: Upload NRO Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: SimpleModManager-NROs
+          path: |
+            build/src/Applications/SimpleModManager/SimpleModManager.nro
+            build/src/Applications/SimpleModManagerConsole/SimpleModManagerConsole.nro
+            build/src/Applications/SimpleModManagerOverlay/SimpleModManagerOverlay.ovl
+          retention-days: 7
+      
+      - name: Upload to Release Assets
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            build/src/Applications/SimpleModManager/SimpleModManager.nro
+            build/src/Applications/SimpleModManagerConsole/SimpleModManagerConsole.nro
+            build/src/Applications/SimpleModManagerOverlay/SimpleModManagerOverlay.ovl
+          name: SimpleModManager ${{ env.VERSION }} (${{ env.SHORT_SHA }})
+          tag_name: ${{ env.VERSION }}-${{ env.SHORT_SHA }}
+          body: |
+
+            ### Build Artifacts:
+            - **SimpleModManager.nro** - 图形界面版本
+            - **SimpleModManagerConsole.nro** - 控制台版本  
+            - **SimpleModManagerOverlay.ovl** - Overlay版本
+            
+            Build from commit: ${{ github.sha }}
+          draft: false
+          prerelease: false
