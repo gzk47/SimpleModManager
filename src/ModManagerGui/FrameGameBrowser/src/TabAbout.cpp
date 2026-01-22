@@ -49,7 +49,8 @@ TabAbout::TabAbout() {
   auto *copyright = new brls::Label(
     brls::LabelStyle::DESCRIPTION,
     "SimpleModManager is licensed under GPL-v3.0\n" \
-        "\u00A9 2019 - 2023 Nadrino",
+        "\u00A9 2019 - 2023 Nadrino\n" \
+        "\u00A9 2026 gzk_47",
     true
   );
   copyright->setHorizontalAlign(NVG_ALIGN_CENTER);
@@ -67,7 +68,7 @@ TabAbout::TabAbout() {
   portrait->setHeight(200);
   portrait->setParent(rightBox);
   rightBox->addView(portrait);
-  auto* portraitText = new brls::Label(brls::LabelStyle::SMALL, "Author: Nadrino", true);
+  auto* portraitText = new brls::Label(brls::LabelStyle::SMALL, "Author: Nadrino, gzk_47", true);
   portraitText->setHorizontalAlign(NVG_ALIGN_CENTER);
   rightBox->addView(portraitText);
 
