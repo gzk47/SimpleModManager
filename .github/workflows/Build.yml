@@ -24,7 +24,7 @@ jobs:
           clean: true
           fetch-depth: 0
           fetch-tags: true
-          submodules: recursive
+          submodules: false
 
       - name: Clone submodules
         run: |
