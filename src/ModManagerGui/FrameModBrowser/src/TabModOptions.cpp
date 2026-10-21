@@ -20,12 +20,12 @@ TabModOptions::TabModOptions(FrameModBrowser* owner_) : _owner_(owner_) {  }
 void TabModOptions::buildFolderInstallPresetItem() {
 
   _itemConfigPreset_ = new brls::ListItem(
-    "\uE255 Config preset",
-    "Specify from which install folder mods from this subfolder (game) will be installed.\n",
+    "\uE255 配置预设",
+    "指定此子文件夹（游戏）中的 mod 将从哪个安装文件夹安装。\n",
     ""
   );
 
-  _itemConfigPreset_->setValue("Inherited from the main menu");
+  _itemConfigPreset_->setValue("继承自主菜单");
   if( not this->getModManager().getCurrentPresetName().empty() ){
     _itemConfigPreset_->setValue( this->getModManager().getCurrentPresetName() );
   }
@@ -38,7 +38,7 @@ void TabModOptions::buildFolderInstallPresetItem() {
     int preSelection{0};
     std::vector<std::string> menuList;
     menuList.reserve( 1 + this->getModManager().getConfig().presetList.size() );
-    menuList.emplace_back( "Inherited from the main menu" );
+    menuList.emplace_back( "继承自主菜单" );
     int iPreset{-1};
     for( auto& preset: this->getModManager().getConfig().presetList ){
       iPreset++;
@@ -57,7 +57,7 @@ void TabModOptions::buildFolderInstallPresetItem() {
       if( result == 0 ){
         LogDebug << "Same as config selected. Deleting file..." << std::endl;
         this->getModManager().setCustomPreset("");
-        _itemConfigPreset_->setValue( "Inherited from the main menu" );
+        _itemConfigPreset_->setValue( "继承自主菜单" );
       }
       else{
         LogDebug << "Selected " << result - 1 << std::endl;
@@ -71,7 +71,7 @@ void TabModOptions::buildFolderInstallPresetItem() {
     }; // Callback sequence
 
     brls::Dropdown::open(
-        "Please select the config preset you want for this folder",
+        "请选择此文件夹要使用的配置预设",
         menuList, valueCallback,
         preSelection,
         true
@@ -83,25 +83,25 @@ void TabModOptions::buildFolderInstallPresetItem() {
 void TabModOptions::buildResetModsCacheItem() {
 
   _itemResetModsCache_ = new brls::ListItem(
-    "\uE877 Recheck all mods",
-    "\tThis option resets all mods cache status and recheck if each files is properly applied.\n"
-              "\tWhen files where managed without SimpleModManager, the displayed mod status can be wrong. "
-              "This typically happens when you modified some mod files, or other programs override some of the applied files.",
+    "\uE877 重新检查所有 mod",
+    "\t此选项会重置所有 mod 的缓存状态，并重新检查每个文件是否正确应用。\n"
+              "\t当文件并非通过 SimpleModManager 管理时，显示的 mod 状态可能不准确。"
+              "这通常发生在你修改了某些 mod 文件，或其他程序覆盖了部分已应用的文件时。",
     ""
   );
 
   _itemResetModsCache_->getClickEvent()->subscribe([this](View* view){
 
-    auto* dialog = new brls::Dialog("Do you want to reset mods cache status and recheck all mod files ?");
+    auto* dialog = new brls::Dialog("是否要重置 mod 缓存状态并重新检查所有 mod 文件？");
 
-    dialog->addButton("Yes", [&, dialog](brls::View* view) {
+    dialog->addButton("是", [&, dialog](brls::View* view) {
       // first, close the dialog box before the async routine starts
       dialog->close();
 
       // starts the async routine
       _owner_->getGuiModManager().startCheckAllModsThread();
     });
-    dialog->addButton("No", [dialog](brls::View* view) {
+    dialog->addButton("否", [dialog](brls::View* view) {
       dialog->close();
     });
 
@@ -114,24 +114,24 @@ void TabModOptions::buildResetModsCacheItem() {
 void TabModOptions::buildDisableAllMods() {
 
   _itemDisableAllMods_ = new brls::ListItem(
-    "\uE872 Disable all installed mods",
-    "This option will remove all installed mods files.\n"
-              "Note: to be deleted, installed mod files need to be identical to the one present in this folder.",
+    "\uE872 禁用所有已安装的 mod",
+    "此选项会移除所有已安装的 mod 文件。\n"
+              "注意：只有与此文件夹中完全相同的已安装 mod 文件才会被删除。",
     ""
   );
 
   _itemDisableAllMods_->getClickEvent()->subscribe([this](View* view){
 
-    auto* dialog = new brls::Dialog("Do you want to disable all installed mods ?");
+    auto* dialog = new brls::Dialog("是否要禁用所有已安装的 mod？");
 
-    dialog->addButton("Yes", [&, dialog](brls::View* view) {
+    dialog->addButton("是", [&, dialog](brls::View* view) {
       // first, close the dialog box before the async routine starts
       dialog->close();
 
       // starts the async routine
       _owner_->getGuiModManager().startRemoveAllModsThread();
     });
-    dialog->addButton("No", [dialog](brls::View* view) {
+    dialog->addButton("否", [dialog](brls::View* view) {
       dialog->close();
     });
 
@@ -144,9 +144,9 @@ void TabModOptions::buildDisableAllMods() {
 void TabModOptions::buildGameIdentificationItem(){
 
   _itemGameIdentification_ = new brls::ListItem(
-    "Associated TitleID",
+    "关联 TitleID",
     "",
-    "Current value: "
+    "当前值："
   );
 
   if( _owner_->getIcon() != nullptr ){
@@ -157,7 +157,7 @@ void TabModOptions::buildGameIdentificationItem(){
   }
   else{
     _itemGameIdentification_->setSubLabel(
-        _itemGameIdentification_->getSubLabel() + "Not found."
+        _itemGameIdentification_->getSubLabel() + "未找到"
     );
   }
 

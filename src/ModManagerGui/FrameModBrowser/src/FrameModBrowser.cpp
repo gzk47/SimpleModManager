@@ -37,7 +37,7 @@ FrameModBrowser::FrameModBrowser(GuiModManager* guiModManagerPtr_) : _guiModMana
 
     auto* parametersTabList = new brls::List();
 
-    auto* presetParameter = new brls::ListItem("Config preset", "", "");
+    auto* presetParameter = new brls::ListItem("配置预设", "", "");
     presetParameter->setValue( getGameBrowser().getConfigHandler().getConfig().getCurrentPresetName() );
     parametersTabList->addView(presetParameter);
 
@@ -48,19 +48,19 @@ FrameModBrowser::FrameModBrowser(GuiModManager* guiModManagerPtr_) : _guiModMana
 
     _tabModOptions_->initialize();
 
-    this->addTab("Mod Browser", _tabModBrowser_);
+    this->addTab("Mod 列表", _tabModBrowser_);
     this->addSeparator();
-    this->addTab("Mod Presets", _tabModPresets_);
-    this->addTab("Options", _tabModOptions_);
-    this->addTab("Plugins", _tabModPlugins_);
+    this->addTab("Mod 预设", _tabModPresets_);
+    this->addTab("选项", _tabModOptions_);
+    this->addTab("插件", _tabModPlugins_);
 
   }
   else{
     auto* list = new brls::List();
     LogError("Can't open: %s", gamePath.c_str());
-    auto* item = new brls::ListItem("Error: Can't open " + gamePath , "", "");
+    auto* item = new brls::ListItem("错误：无法打开 " + gamePath , "", "");
     list->addView(item);
-    this->addTab("Mod Browser", list);
+    this->addTab("Mod 列表", list);
   }
 
 }

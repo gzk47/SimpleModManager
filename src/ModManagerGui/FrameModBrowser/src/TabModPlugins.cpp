@@ -86,14 +86,14 @@ TabModPlugins::TabModPlugins(FrameModBrowser* owner_) : _owner_(owner_) {
 		item->setValue(selected_plugin_version);
 		item->getClickEvent()->subscribe([this, selected_plugin, selected_plugin_path](View *view) {
       LogDebug << "selected_plugin_path = " << selected_plugin_path << std::endl;
-			auto *dialog = new brls::Dialog("Do you want to start \"" + selected_plugin + "\" ?");
+			auto *dialog = new brls::Dialog("是否要启动 \"" + selected_plugin + "\" ?");
 
-			dialog->addButton("Yes", [selected_plugin_path, dialog](brls::View *view) {
+			dialog->addButton("是", [selected_plugin_path, dialog](brls::View *view) {
 				envSetNextLoad(selected_plugin_path.c_str(), selected_plugin_path.c_str());
 				brls::Application::quit();
 				dialog->close();
 			});
-			dialog->addButton("No", [dialog](brls::View *view) {
+			dialog->addButton("否", [dialog](brls::View *view) {
 				dialog->close();
 			});
 
@@ -102,7 +102,7 @@ TabModPlugins::TabModPlugins(FrameModBrowser* owner_) : _owner_(owner_) {
 
 			return true;
 		});
-		item->updateActionHint(brls::Key::A, "Start");
+		item->updateActionHint(brls::Key::A, "启动");
 		item->setValueActiveColor(nvgRGB(80, 128, 80));
 		brls::Image *icon = load_image_cache(selected_plugin_path);
 		item->setThumbnail(icon);
@@ -115,8 +115,8 @@ TabModPlugins::TabModPlugins(FrameModBrowser* owner_) : _owner_(owner_) {
 	{
 
 		auto *emptyListLabel = new brls::ListItem(
-        "No plugins have been found in " + modManager.getGameFolderPath() + "/.plugins",
-			"There you need to put your plugins such as: ./<name-of-the-plugin>.smm");
+        "未在以下位置找到任何插件：" + modManager.getGameFolderPath() + "/.plugins",
+			"请按如下结构放置你的插件：./<name-of-the-plugin>.smm");
 		emptyListLabel->show([]() {}, false);
 		this->addView(emptyListLabel);
 	}

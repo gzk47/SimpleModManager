@@ -95,7 +95,7 @@ void GuiModManager::getModStatus(const std::string &modName_, bool useCache_) {
 
   int sameFileCount = 0;
 
-  modCheckMonitor.currentFile = "Listing mod files...";
+  modCheckMonitor.currentFile = "正在列出 mod 文件...";
   std::vector<std::string> modFileList = GenericToolbox::lsFilesRecursive(modPath);
 
   for( size_t iFile = 0 ; iFile < modFileList.size() ; iFile++ ){
@@ -121,10 +121,10 @@ void GuiModManager::getModStatus(const std::string &modName_, bool useCache_) {
 
   cacheEntry.applyFraction = double(sameFileCount) / double(modFileList.size());
 
-  if     ( modFileList.empty()           ) cacheEntry.statusStr = "NO FILE";
-  else if( cacheEntry.applyFraction == 0 ) cacheEntry.statusStr = "INACTIVE";
-  else if( cacheEntry.applyFraction == 1 ) cacheEntry.statusStr = "ACTIVE";
-  else cacheEntry.statusStr = "PARTIAL (" + GenericToolbox::joinAsString("/", sameFileCount, modFileList.size()) + ")";
+  if     ( modFileList.empty()           ) cacheEntry.statusStr = "无文件";
+  else if( cacheEntry.applyFraction == 0 ) cacheEntry.statusStr = "未应用";
+  else if( cacheEntry.applyFraction == 1 ) cacheEntry.statusStr = "已应用";
+  else cacheEntry.statusStr = "部分应用 (" + GenericToolbox::joinAsString("/", sameFileCount, modFileList.size()) + ")";
 
   LogInfo << modName_ << " -> " << cacheEntry.statusStr << std::endl;
   modManager.dumpModStatusCache();
@@ -286,7 +286,7 @@ bool GuiModManager::applyModFunction(const std::string& modName_){
   _loadingPopup_.getMonitorView()->setExecOnDelete([this]{ this->_triggeredOnCancel_ = true; });
 
   LogWarning << "Applying: " << modName_ << std::endl;
-  _loadingPopup_.getMonitorView()->setHeaderTitle("Applying mod...");
+  _loadingPopup_.getMonitorView()->setHeaderTitle("正在应用 mod...");
   _loadingPopup_.getMonitorView()->setProgressColor(GenericToolbox::Borealis::greenNvgColor);
   _loadingPopup_.getMonitorView()->resetMonitorAddresses();
   _loadingPopup_.getMonitorView()->setTitlePtr( &modName_ );
@@ -297,7 +297,7 @@ bool GuiModManager::applyModFunction(const std::string& modName_){
   if( _triggeredOnCancel_ ){ return this->leaveModAction(false); }
 
   LogWarning << "Checking: " << modName_ << std::endl;
-  _loadingPopup_.getMonitorView()->setHeaderTitle("Checking the applied mod...");
+  _loadingPopup_.getMonitorView()->setHeaderTitle("正在检查已应用的 mod...");
   _loadingPopup_.getMonitorView()->setProgressColor(GenericToolbox::Borealis::blueNvgColor);
   _loadingPopup_.getMonitorView()->resetMonitorAddresses();
   _loadingPopup_.getMonitorView()->setTitlePtr(&modName_);
@@ -315,7 +315,7 @@ bool GuiModManager::applyModPresetFunction(const std::string& presetName_){
 
   LogInfo << "Removing all installed mods..." << std::endl;
   _loadingPopup_.getMonitorView()->setProgressColor(GenericToolbox::Borealis::redNvgColor);
-  _loadingPopup_.getMonitorView()->setHeaderTitle("Removing all installed mods...");
+  _loadingPopup_.getMonitorView()->setHeaderTitle("正在移除所有已安装的 mod...");
   _loadingPopup_.getMonitorView()->resetMonitorAddresses();
   _loadingPopup_.getMonitorView()->setTitlePtr( &modRemoveAllMonitor.currentMod );
   _loadingPopup_.getMonitorView()->setSubTitlePtr( &modRemoveMonitor.currentFile );
@@ -325,7 +325,7 @@ bool GuiModManager::applyModPresetFunction(const std::string& presetName_){
   if( _triggeredOnCancel_ ){ return this->leaveModAction(false); }
 
   LogInfo("Applying Mod Preset");
-  _loadingPopup_.getMonitorView()->setHeaderTitle("Applying mod preset...");
+  _loadingPopup_.getMonitorView()->setHeaderTitle("正在应用 mod 预设...");
   _loadingPopup_.getMonitorView()->setProgressColor(GenericToolbox::Borealis::greenNvgColor);
   _loadingPopup_.getMonitorView()->resetMonitorAddresses();
   _loadingPopup_.getMonitorView()->setTitlePtr( &modApplyListMonitor.currentMod );
@@ -342,7 +342,7 @@ bool GuiModManager::applyModPresetFunction(const std::string& presetName_){
 
   LogInfo("Checking all mods status...");
   _loadingPopup_.getMonitorView()->setProgressColor(GenericToolbox::Borealis::blueNvgColor);
-  _loadingPopup_.getMonitorView()->setHeaderTitle("Checking all mods status...");
+  _loadingPopup_.getMonitorView()->setHeaderTitle("正在检查所有 mod 状态...");
 
   _loadingPopup_.getMonitorView()->resetMonitorAddresses();
   _loadingPopup_.getMonitorView()->setTitlePtr( &modCheckAllMonitor.currentMod );
@@ -360,7 +360,7 @@ bool GuiModManager::removeModFunction(const std::string& modName_){
   _loadingPopup_.getMonitorView()->setExecOnDelete([this]{ this->_triggeredOnCancel_ = true; });
 
   LogWarning << "Removing: " << modName_ << std::endl;
-  _loadingPopup_.getMonitorView()->setHeaderTitle("Removing mod...");
+  _loadingPopup_.getMonitorView()->setHeaderTitle("正在移除 mod...");
   _loadingPopup_.getMonitorView()->setProgressColor(GenericToolbox::Borealis::redNvgColor);
   _loadingPopup_.getMonitorView()->resetMonitorAddresses();
   _loadingPopup_.getMonitorView()->setTitlePtr(&modName_);
@@ -371,7 +371,7 @@ bool GuiModManager::removeModFunction(const std::string& modName_){
 
   LogWarning << "Checking: " << modName_ << std::endl;
   _loadingPopup_.getMonitorView()->setProgressColor( GenericToolbox::Borealis::blueNvgColor );
-  _loadingPopup_.getMonitorView()->setHeaderTitle("Checking mod...");
+  _loadingPopup_.getMonitorView()->setHeaderTitle("正在检查 mod...");
   _loadingPopup_.getMonitorView()->resetMonitorAddresses();
   _loadingPopup_.getMonitorView()->setTitlePtr(&modName_);
   _loadingPopup_.getMonitorView()->setSubTitlePtr( &modCheckMonitor.currentFile );
@@ -388,7 +388,7 @@ bool GuiModManager::checkAllModsFunction(){
 
   LogInfo("Checking all mods status...");
   _loadingPopup_.getMonitorView()->setProgressColor(GenericToolbox::Borealis::blueNvgColor);
-  _loadingPopup_.getMonitorView()->setHeaderTitle("Checking all mods status...");
+  _loadingPopup_.getMonitorView()->setHeaderTitle("正在检查所有 mod 状态...");
   _loadingPopup_.getMonitorView()->resetMonitorAddresses();
   _loadingPopup_.getMonitorView()->setTitlePtr( &modCheckAllMonitor.currentMod );
   _loadingPopup_.getMonitorView()->setSubTitlePtr( &modCheckMonitor.currentFile );
@@ -407,7 +407,7 @@ bool GuiModManager::removeAllModsFunction(){
 
   LogInfo("Removing all installed mods...");
   _loadingPopup_.getMonitorView()->setProgressColor(GenericToolbox::Borealis::redNvgColor);
-  _loadingPopup_.getMonitorView()->setHeaderTitle("Removing all installed mods...");
+  _loadingPopup_.getMonitorView()->setHeaderTitle("正在移除所有已安装的 mod...");
   _loadingPopup_.getMonitorView()->resetMonitorAddresses();
   _loadingPopup_.getMonitorView()->setTitlePtr( &modRemoveAllMonitor.currentMod );
   _loadingPopup_.getMonitorView()->setSubTitlePtr( &modRemoveMonitor.currentFile );
@@ -418,7 +418,7 @@ bool GuiModManager::removeAllModsFunction(){
 
   LogInfo("Checking all mods status...");
   _loadingPopup_.getMonitorView()->setProgressColor(GenericToolbox::Borealis::blueNvgColor);
-  _loadingPopup_.getMonitorView()->setHeaderTitle("Checking all mods status...");
+  _loadingPopup_.getMonitorView()->setHeaderTitle("正在检查所有 mod 状态...");
   _loadingPopup_.getMonitorView()->resetMonitorAddresses();
   _loadingPopup_.getMonitorView()->setTitlePtr( &modCheckAllMonitor.currentMod );
   _loadingPopup_.getMonitorView()->setSubTitlePtr( &modCheckMonitor.currentFile );

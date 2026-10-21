@@ -29,7 +29,7 @@ ThumbnailPresetEditor::ThumbnailPresetEditor(FrameModBrowser* owner_, const std:
     });
 
     // remove mod
-    item->registerAction("Remove", brls::Key::X, [this,item]{
+    item->registerAction("移除", brls::Key::X, [this,item]{
 
       if( _bufferPreset_.modList.empty() ){
         // nothing to remove
@@ -125,7 +125,7 @@ void ThumbnailPresetEditor::updateTags() {
   }
 
   std::stringstream ss;
-  ss << this->_bufferPreset_.modList.size() << " mods have been selected.";
+  ss << this->_bufferPreset_.modList.size() << " mods已选择。";
   this->getSidebar()->setSubtitle( ss.str() );
 
 }
@@ -161,7 +161,7 @@ void ThumbnailPresetEditor::save() {
   _owner_->getTabModPresets()->setTriggerUpdateItem( true );
 }
 void ThumbnailPresetEditor::autoAssignPresetName() {
-  std::string autoName = "new-preset";
+  std::string autoName = "新建预设";
   _bufferPreset_.name = autoName;
   int count{0};
   while( GenericToolbox::doesElementIsInVector(

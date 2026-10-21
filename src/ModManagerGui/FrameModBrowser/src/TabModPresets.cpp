@@ -48,17 +48,17 @@ void TabModPresets::assignButtons(brls::ListItem *item, bool isPreset_) {
   auto* ownerPtr{_owner_};
 
   if( isPreset_ ){
-    item->registerAction("Apply", brls::Key::A, [item, ownerPtr]{
-      auto* dialog = new brls::Dialog("Do you want disable all installed mods and apply the preset \"" + item->getLabel() + "\" ?");
+    item->registerAction("应用", brls::Key::A, [item, ownerPtr]{
+      auto* dialog = new brls::Dialog("是否要禁用所有已安装的 mod，并应用预设 \"" + item->getLabel() + "\" ?");
 
-      dialog->addButton("Yes", [&, dialog, item](brls::View* view) {
+      dialog->addButton("是", [&, dialog, item](brls::View* view) {
         // first, close the dialog box before the apply mod thread starts
         dialog->close();
 
         // starts the async routine
         ownerPtr->getGuiModManager().startApplyModPresetThread(item->getLabel());
       });
-      dialog->addButton("No", [dialog](brls::View* view) {
+      dialog->addButton("否", [dialog](brls::View* view) {
         dialog->close();
       });
 
@@ -66,48 +66,48 @@ void TabModPresets::assignButtons(brls::ListItem *item, bool isPreset_) {
       dialog->open();
       return true;
     });
-    item->registerAction("Remove", brls::Key::X, [this, ownerPtr, item]{
+    item->registerAction("移除", brls::Key::X, [this, ownerPtr, item]{
 
-      auto* dialog = new brls::Dialog("Do you want to delete the preset \"" + item->getLabel() + "\" ?");
+      auto* dialog = new brls::Dialog("是否要删除预设 \"" + item->getLabel() + "\" ?");
 
-      dialog->addButton("Yes", [this, ownerPtr, item, dialog](brls::View* view) {
+      dialog->addButton("是", [this, ownerPtr, item, dialog](brls::View* view) {
         ownerPtr->getGameBrowser().getModPresetHandler().deletePreset( item->getLabel() );
         dialog->close();
         this->setTriggerUpdateItem( true );
       });
-      dialog->addButton("No", [dialog](brls::View* view) { dialog->close(); });
+      dialog->addButton("否", [dialog](brls::View* view) { dialog->close(); });
 
       dialog->setCancelable(true);
       dialog->open();
       return true;
 
     });
-    item->registerAction("Edit", brls::Key::Y, [ownerPtr, item]{
+    item->registerAction("编辑", brls::Key::Y, [ownerPtr, item]{
       // open editor
       auto* editor = new ThumbnailPresetEditor( ownerPtr, item->getLabel() );
 
       auto* icon = ownerPtr->getIcon();
       if(icon != nullptr){
         brls::PopupFrame::open(
-            "Edit preset", icon, 0x20000, editor,
-            "Please select the mods you want to install",
-            "The mods will be applied in the same order."
+            "编辑预设", icon, 0x20000, editor,
+            "请选择要安装的 mod",
+            "mod 将按相同顺序应用。"
         );
       }
       else{
         brls::PopupFrame::open(
-            "Edit preset", editor,
-            "Please select the mods you want to install",
-            "The mods will be applied in the same order."
+            "编辑预设", editor,
+            "请选择要安装的 mod",
+            "mod 将按相同顺序应用。"
         );
       }
 
       return true;
     });
 
-    item->updateActionHint(brls::Key::A, "Apply");
-    item->updateActionHint(brls::Key::X, "Remove");
-    item->updateActionHint(brls::Key::Y, "Edit");
+    item->updateActionHint(brls::Key::A, "应用");
+    item->updateActionHint(brls::Key::X, "移除");
+    item->updateActionHint(brls::Key::Y, "编辑");
 
     item->setActionAvailable(brls::Key::A, true);
     item->setActionAvailable(brls::Key::X, true);
@@ -115,29 +115,29 @@ void TabModPresets::assignButtons(brls::ListItem *item, bool isPreset_) {
   }
   else {
     // new preset
-    item->registerAction("Create", brls::Key::A, [ownerPtr]{
+    item->registerAction("创建", brls::Key::A, [ownerPtr]{
       // create new preset
       auto* editor = new ThumbnailPresetEditor( ownerPtr );
 
       auto* icon = ownerPtr->getIcon();
       if(icon != nullptr){
         brls::PopupFrame::open(
-            "New preset", icon, 0x20000, editor,
-            "Please select the mods you want to install",
-            "The mods will be applied in the same order."
+            "新建预设", icon, 0x20000, editor,
+            "请选择要安装的 mod",
+            "mod 将按相同顺序应用。"
         );
       }
       else{
         brls::PopupFrame::open(
-            "New preset", editor,
-            "Please select the mods you want to install",
-            "The mods will be applied in the same order."
+            "新建预设", editor,
+            "请选择要安装的 mod",
+            "mod 将按相同顺序应用。"
         );
       }
 
       return true;
     });
-    item->updateActionHint(brls::Key::A, "Create");
+    item->updateActionHint(brls::Key::A, "创建");
 
     item->setActionAvailable(brls::Key::A, true);
   }
@@ -171,20 +171,20 @@ void TabModPresets::updatePresetItems() {
     }
     this->assignButtons( _itemList_[ iPreset ], true );
     _itemList_[ iPreset ]->setLabel( presetList[iPreset].name );
-    _itemList_[ iPreset ]->setValue( std::to_string(presetList[iPreset].modList.size()) + " mods in this set" );
+    _itemList_[ iPreset ]->setValue( std::to_string(presetList[iPreset].modList.size()) + " 此套装中的模组" );
     if( _itemList_[iPreset]->isCollapsed() ) _itemList_[iPreset]->expand();
   }
 
   // need one more slot for create new preset
   if( iPreset+1 > _itemList_.size() ){
     LogInfo << "(re)-Creating add button" << std::endl;
-    _itemList_.emplace_back( new brls::ListItem( "\uE402 Create a new mod preset" ) );
+    _itemList_.emplace_back( new brls::ListItem( "\uE402 创建新的 mod 预设" ) );
 
     this->addView( _itemList_[ iPreset ] );
   }
   this->assignButtons( _itemList_[ iPreset ], false );
   if( _itemList_[iPreset]->isCollapsed() ) _itemList_[iPreset]->expand();
-  _itemList_[ iPreset ]->setLabel( "\uE402 Create a new mod preset" );
+  _itemList_[ iPreset ]->setLabel( "\uE402 创建新的 mod 预设" );
   _itemList_[ iPreset ]->setValue( "" );
   iPreset++;
 

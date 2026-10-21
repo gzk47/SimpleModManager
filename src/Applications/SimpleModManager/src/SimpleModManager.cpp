@@ -59,6 +59,19 @@ void runGui(){
   brls::i18n::loadTranslations("en-US");
   LogThrowIf(not brls::Application::init("SimpleModManager"), "Unable to init Borealis application");
 
+  // ---- 加载简体中文字体 ----
+  {
+    PlFontData scFont;
+    Result rc = plGetSharedFontByType(&scFont, PlSharedFontType_ChineseSimplified);
+    if (R_SUCCEEDED(rc)) {
+        brls::Application::loadFontFromMemory("sc", scFont.address, scFont.size, false);
+        LogInfo << "Load SC font ok" << std::endl;
+    } else {
+        LogWarning << "plGetSharedFontByType rc=" << rc << std::endl;
+    }
+  }
+  // ---- 加载简体中文字体 ----
+
   LogInfo << "Creating root frame..." << std::endl;
   auto* mainFrame = new FrameRoot();
 

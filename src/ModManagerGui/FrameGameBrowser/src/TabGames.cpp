@@ -28,12 +28,12 @@ TabGames::TabGames(FrameRoot* owner_) : _owner_(owner_) {
     std::stringstream ssSubTitle;
 
     auto baseFolder = this->getConfig().baseFolder;
-    ssTitle << "No game folders have been found in " << baseFolder;
+    ssTitle << "未在以下位置找到游戏文件夹：" << baseFolder;
 
-    ssSubTitle << "- To add mods, you need to copy them such as: ";
-    ssSubTitle << baseFolder << "/<name-of-the-game>/<name-of-the-mod>/<mods-files-and-folders>." << std::endl;
-    ssSubTitle << "- You can also change this folder (" + baseFolder;
-    ssSubTitle << ") by editing the config file in /config/SimpleModManager/parameters.ini";
+    ssSubTitle << "- 要添加 mod，请按如下结构复制：";
+    ssSubTitle << baseFolder << "/<游戏名称>/<mod 名称>/<mod 文件及文件夹>。" << std::endl;
+    ssSubTitle << "- 你也可以修改此文件夹 (" + baseFolder;
+    ssSubTitle << ") 编辑此路径的配置文件 /config/SimpleModManager/parameters.ini";
 
     _gameList_.emplace_back();
     _gameList_.back().item = new brls::ListItem( ssTitle.str(), ssSubTitle.str() );
@@ -51,7 +51,7 @@ TabGames::TabGames(FrameRoot* owner_) : _owner_(owner_) {
       int nMods = int( GenericToolbox::lsDirs(gamePath).size() );
 
       // memory allocation
-      auto* item = new brls::ListItem(gameEntry.title, "", std::to_string(nMods) + " mod(s) available.");
+      auto* item = new brls::ListItem(gameEntry.title, "", std::to_string(nMods) + " mod(s) 可用。");
 
       // looking for tid is quite slow... Slows down the boot up
       std::string _titleId_{ GenericToolbox::Switch::Utils::lookForTidInSubFolders(gamePath) };
@@ -65,7 +65,7 @@ TabGames::TabGames(FrameRoot* owner_) : _owner_(owner_) {
         modsBrowser->registerAction("", brls::Key::PLUS, []{return true;}, true);
         modsBrowser->updateActionHint(brls::Key::PLUS, ""); // make the change visible
       });
-      item->updateActionHint(brls::Key::A, "Open");
+      item->updateActionHint(brls::Key::A, "打开");
 
 
       _gameList_.emplace_back();

@@ -13,6 +13,15 @@ LoggerInit([]{
   Logger::setUserHeaderStr("[TabGeneralSettings]");
 });
 
+namespace{
+  std::string getSortGameListLabel(const std::string& sortEnumStr_){
+    if( sortEnumStr_ == "NbMods" )       { return "按 mod 数量"; }
+    if( sortEnumStr_ == "Alphabetical" ) { return "按名称"; }
+    if( sortEnumStr_ == "NoSort" )       { return "不排序"; }
+    return sortEnumStr_;
+  }
+}
+
 TabGeneralSettings::TabGeneralSettings(FrameRoot* owner_) : _owner_(owner_) {
   LogWarning << "Building general settings tab..." << std::endl;
   this->rebuildLayout();
@@ -22,11 +31,10 @@ TabGeneralSettings::TabGeneralSettings(FrameRoot* owner_) : _owner_(owner_) {
 void TabGeneralSettings::rebuildLayout() {
 
   itemInstallLocationPreset = new brls::ListItem(
-    "\uE255 Install location:",
-    "Specify from which base folder mods will be installed.\n"\
-    "- If you are using Atmosphere, mods have to be installed in /atmosphere/. "\
-    "This corresponds to the \"default\" preset. You need to take this path into account in your mod tree structure.\n"\
-    "- If you want to set a specific install folder for a given game, please refer to its Option tab and go to \"Attribute a config preset\".",
+    "\uE255 安装位置：",
+    "指定 mod 从哪个基准文件夹安装。\n"\
+    "- 如果你使用 Atmosphere，mod 需要安装到 /atmosphere/，这对应“default”预设。你需要在 mod 目录结构中考虑此路径。\n"\
+    "- 如果你想为某个游戏单独指定安装文件夹，请进入该游戏的“选项”标签页，选择“配置预设”。",
     ""
   );
   itemInstallLocationPreset->setValue(this->getConfig().getCurrentPresetName() );
@@ -49,7 +57,7 @@ void TabGeneralSettings::rebuildLayout() {
     }
 
     brls::Dropdown::open(
-      "Current install preset:",
+      "当前安装预设：",
       presetNameList,
       valueCallback,
       this->getConfig().selectedPresetIndex
@@ -58,20 +66,20 @@ void TabGeneralSettings::rebuildLayout() {
   this->addView(itemInstallLocationPreset);
 
   auto* itemStoredModsBaseFolder = new brls::ListItem(
-    "\uE431 Stored mods location:",
-    "This is the place where SimpleModManager will look for your mods. From this folder, the tree structure must look like this:\n"\
-    "./<name-of-the-game-or-category>/<mod-name>/<mod-tree-structure>.",
+    "\uE431 Mod 存放位置：",
+    "这是 SimpleModManager 查找 mod 的位置。在此文件夹内，目录结构必须如下：\n"\
+    "./<游戏或分类名称>/<mod 名称>/<mod 目录结构>。",
     "");
   itemStoredModsBaseFolder->setValue( this->getConfig().baseFolder );
   this->addView(itemStoredModsBaseFolder);
 
 
   auto*  itemSortGames = new brls::ListItem(
-      "\uE255 Sort games by",
-      "Set which ordering of the games are displayed in the Game Browser list.\n",
+      "\uE255 游戏排序方式",
+      "设置游戏列表中游戏的显示顺序。\n",
       ""
   );
-  itemSortGames->setValue( this->getConfig().sortGameList.toString() );
+itemSortGames->setValue( getSortGameListLabel( this->getConfig().sortGameList.toString() ) );
 
 
   // On click : show scrolling up menu
@@ -81,31 +89,35 @@ void TabGeneralSettings::rebuildLayout() {
     // build the choice list + preselection
     int preSelection{0};
     std::vector<std::string> menuList;
-    menuList.reserve( ConfigHolder::SortGameList::getEnumSize() );
-    for( int iEnum = 0 ; iEnum < ConfigHolder::SortGameList::getEnumSize() ; iEnum++ ){
-      menuList.emplace_back( ConfigHolder::SortGameList::toString(iEnum) );
-      if( menuList.back() == this->getConfig().sortGameList.toString() ){ preSelection = iEnum; }
-    }
+	
+    std::vector<std::string> enumStrList;
+menuList.reserve( ConfigHolder::SortGameList::getEnumSize() );
+    enumStrList.reserve( ConfigHolder::SortGameList::getEnumSize() );
+for( int iEnum = 0 ; iEnum < ConfigHolder::SortGameList::getEnumSize() ; iEnum++ ){
+      enumStrList.emplace_back( ConfigHolder::SortGameList::toString(iEnum) );
+      menuList.emplace_back( getSortGameListLabel( enumStrList.back() ) );
+      if( enumStrList.back() == this->getConfig().sortGameList.toString() ){ preSelection = iEnum; }
+}
 
-    // function that will set the config preset from the Dropdown menu selection (int result)
-    brls::ValueSelectedEvent::Callback valueCallback = [this, itemSortGames, menuList](int result) {
-      if( result == -1 ){
-        LogDebug << "Not selected. Return." << std::endl;
-        // auto pop view
-        return;
-      }
+// function that will set the config preset from the Dropdown menu selection (int result)
+    brls::ValueSelectedEvent::Callback valueCallback = [this, itemSortGames, enumStrList](int result) {
+if( result == -1 ){
+LogDebug << "Not selected. Return." << std::endl;
+// auto pop view
+return;
+}
 
-      LogInfo << "Selected: " << menuList[result] << std::endl;
-      this->getConfig().sortGameList = ConfigHolder::SortGameList::toEnum( menuList[result] );
-      _owner_->getGuiModManager().getGameBrowser().getConfigHandler().dumpConfigToFile();
-      itemSortGames->setValue( this->getConfig().sortGameList.toString() );
+      LogInfo << "Selected: " << enumStrList[result] << std::endl;
+      this->getConfig().sortGameList = ConfigHolder::SortGameList::toEnum( enumStrList[result] );
+_owner_->getGuiModManager().getGameBrowser().getConfigHandler().dumpConfigToFile();
+      itemSortGames->setValue( getSortGameListLabel( this->getConfig().sortGameList.toString() ) );
 
       brls::Application::popView();
       return;
     }; // Callback sequence
 
     brls::Dropdown::open(
-        "Please select the sort preset you want",
+        "请选择你想要的排序方式",
         menuList, valueCallback,
         preSelection,
         true
@@ -115,19 +127,19 @@ void TabGeneralSettings::rebuildLayout() {
   this->addView(itemSortGames);
 
 
-  auto* itemUseUI = new brls::ListItem("\uE072 Disable the GUI", "If you want to go back on the old UI, select this option.");
+  auto* itemUseUI = new brls::ListItem("\uE072 禁用图形界面", "如果你想返回旧的命令行界面，请选择此选项。");
 
-  itemUseUI->updateActionHint(brls::Key::B, "Back");
-  itemUseUI->registerAction("Select", brls::Key::A, [&](){
+  itemUseUI->updateActionHint(brls::Key::B, "返回");
+  itemUseUI->registerAction("选择", brls::Key::A, [&](){
 
-    auto* dialog = new brls::Dialog("Do you want to disable this GUI and switch back to the console-style UI ?");
+    auto* dialog = new brls::Dialog("是否要禁用当前图形界面，并切换回命令行界面？");
 
-    dialog->addButton("Yes", [&](brls::View* view) {
+    dialog->addButton("是", [&](brls::View* view) {
       this->getConfig().useGui = false;
       _owner_->getGuiModManager().getGameBrowser().getConfigHandler().dumpConfigToFile();
       brls::Application::quit();
     });
-    dialog->addButton("No", [dialog](brls::View* view) {
+    dialog->addButton("否", [dialog](brls::View* view) {
       dialog->close();
     });
 

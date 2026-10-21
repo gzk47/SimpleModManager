@@ -9,7 +9,7 @@ set( GUI_DIR ${PROJECT_SOURCE_DIR}/gui)
 
 # Meta information about the app
 set( GUI_TITLE ${GUI_NAME})
-set( GUI_AUTHOR "Nadrino")
+set( GUI_AUTHOR "Nadrino, gzk_47")
 set( GUI_ICON  "${CMAKE_CURRENT_SOURCE_DIR}/resources/assets/icon_gui.jpg")
 set( GUI_ROMFS "${CMAKE_CURRENT_SOURCE_DIR}/resources/romfs")
 

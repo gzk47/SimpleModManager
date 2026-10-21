@@ -29,8 +29,8 @@ TabModBrowser::TabModBrowser(FrameModBrowser* owner_) : _owner_(owner_) {
 
     _modItemList_.emplace_back();
     _modItemList_.back().item = new brls::ListItem(
-        "No mods have been found in " + this->getModManager().getGameFolderPath(),
-        "There you need to put your mods such as: ./<name-of-the-mod>/<file-structure-in-installed-directory>"
+        "未在以下位置找到任何 mod：" + this->getModManager().getGameFolderPath(),
+        "请按如下结构放置你的 mod：./<mod 名称>/<安装目录中的文件结构>"
     );
     _modItemList_.back().item->show([](){}, false );
   }
@@ -47,35 +47,35 @@ TabModBrowser::TabModBrowser(FrameModBrowser* owner_) : _owner_(owner_) {
 
       // initialization
       item->getClickEvent()->subscribe([&, mod](View* view) {
-        auto* dialog = new brls::Dialog("Do you want to install \"" + mod.modName + "\" ?");
+        auto* dialog = new brls::Dialog("是否要安装“" + mod.modName + "\" ?");
 
-        dialog->addButton("Yes", [&, mod, dialog](brls::View* view) {
+        dialog->addButton("是", [&, mod, dialog](brls::View* view) {
           // first, close the dialog box before the apply mod thread starts
           dialog->close();
 
           // starts the async routine
           _owner_->getGuiModManager().startApplyModThread( mod.modName );
         });
-        dialog->addButton("No", [dialog](brls::View* view) { dialog->close(); });
+        dialog->addButton("否", [dialog](brls::View* view) { dialog->close(); });
 
         dialog->setCancelable(true);
         dialog->open();
 
         return true;
       });
-      item->updateActionHint(brls::Key::A, "Apply");
+      item->updateActionHint(brls::Key::A, "应用");
 
-      item->registerAction("Disable", brls::Key::X, [&, mod]{
-        auto* dialog = new brls::Dialog("Do you want to disable \"" + mod.modName + "\" ?");
+      item->registerAction("禁用", brls::Key::X, [&, mod]{
+        auto* dialog = new brls::Dialog("是否要禁用 \"" + mod.modName + "\" ?");
 
-        dialog->addButton("Yes", [&, dialog, mod](brls::View* view) {
+        dialog->addButton("是", [&, dialog, mod](brls::View* view) {
           // first, close the dialog box before the async routine starts
           dialog->close();
 
           // starts the async routine
           _owner_->getGuiModManager().startRemoveModThread( mod.modName );
         });
-        dialog->addButton("No", [dialog](brls::View* view) { dialog->close(); });
+        dialog->addButton("否", [dialog](brls::View* view) { dialog->close(); });
 
         dialog->setCancelable(true);
         dialog->open();
